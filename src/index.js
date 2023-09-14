@@ -4,7 +4,6 @@ const {ServerConfig,Logger} = require('./config');// no need for './config/index
 
 const app = express();
 const apiRoutes = require('./routes');
-
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 //both above are for reading requests that has request body

@@ -42,8 +42,27 @@ async function signIn(data)
         throw new AppError('Something Went Wrong',StatusCodes.INTERNAL_SERVER_ERROR);
     }
 }
-
+async function isAuthenticated(token)
+{
+    try {
+        if(!token)
+            throw new AppError('Missing JWT token',StatusCodes.BAD_REQUEST);
+        const response = Auth.verifyToken(token);// if not verified then it throws an error (JsoneWebTokenError) this will be caught in the below catch block
+        const user = await userRepository.get(response.id);
+        if(!user)
+            throw new AppError('No User Found',StatusCodes.NOT_FOUND);
+        return user.id;// return the Id of the user 
+    } catch (error) {
+        if(error instanceof AppError)
+            throw error;
+        if(error.name == 'JsonWebTokenError')
+            throw new AppError('Invalid JWT token',StatusCodes.BAD_REQUEST);
+        console.log(error);
+        throw new AppError('Something Went Wrong',StatusCodes.INTERNAL_SERVER_ERROR);
+    }   
+}
 module.exports = {
     createUser,
-    signIn
+    signIn,
+    isAuthenticated
 }
