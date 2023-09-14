@@ -4,6 +4,14 @@ const {ServerConfig,Logger} = require('./config');// no need for './config/index
 
 const app = express();
 const apiRoutes = require('./routes');
+// rate limiter
+const { rateLimit } = require('express-rate-limit');
+const limiter = rateLimit({
+    windowMs: 2 * 60 * 1000, // 2 minutes
+	limit: 3// only 3 requests for an IP address 
+});
+app.use(limiter);
+
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 //both above are for reading requests that has request body
