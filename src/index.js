@@ -4,6 +4,8 @@ const {ServerConfig,Logger} = require('./config');// no need for './config/index
 
 const app = express();
 const apiRoutes = require('./routes');
+//proxy middleware
+const { createProxyMiddleware } = require('http-proxy-middleware');
 // rate limiter
 const { rateLimit } = require('express-rate-limit');
 const limiter = rateLimit({
@@ -15,6 +17,16 @@ app.use(limiter);
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 //both above are for reading requests that has request body
+
+app.use('/flightsService', createProxyMiddleware({ target: ServerConfig.FLIGHTS_SERVICE, 
+        changeOrigin: true,
+        pathRewrite:{'^/flightsService' : '/'} //this rewrites the path
+    }));
+app.use('/bookingService', createProxyMiddleware({ target: ServerConfig.BOOKING_SERVICE, 
+        changeOrigin: true,
+        pathRewrite:{'^/bookingService' : '/'} // rewrites the path to / in booking service
+    }));
+
 app.use('/api',apiRoutes);
 app.listen(ServerConfig.PORT,()=>{
     console.log(`Server is up and running on the port ${ServerConfig.PORT}`);
