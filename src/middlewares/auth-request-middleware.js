@@ -39,9 +39,10 @@ async function checkAuth(req,res,next)
     } catch (error) {
         ErrorResponse.message = 'Something went wrong while processing';
         let explanation = [];
-        explanation.push('Improper format of the data in incoming Request (User Not Authorized)');
-        ErrorResponse.error = new AppError(explanation,StatusCodes.BAD_REQUEST);
+        // explanation.push('Improper format of the data in incoming Request (User Not Authorized)');
+        // ErrorResponse.error = new AppError(explanation,StatusCodes.BAD_REQUEST);
         // to obtain the error from the underlying layer that throws just use ErrorResponse.error = error
+        ErrorResponse.error = error;
         return res.status(StatusCodes.BAD_REQUEST).json(ErrorResponse);
     }
 }
