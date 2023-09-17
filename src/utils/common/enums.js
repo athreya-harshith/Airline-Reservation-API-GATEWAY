@@ -10,7 +10,13 @@ const BOOKING_STATUS ={
     BOOKED:'booked',
     CANCELLED:'cancelled'
 }
+const USER_ROLES ={
+    ADMIN:'admin',
+    CUSTOMER :'customer',
+    FLIGHT_COMPANY :'flight-company'
+}
 module.exports = {
     SEAT_TYPE,
-    BOOKING_STATUS
+    BOOKING_STATUS,
+    USER_ROLES
 }
