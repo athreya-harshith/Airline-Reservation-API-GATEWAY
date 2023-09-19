@@ -103,10 +103,34 @@ async function isAdmin(id)
         throw new AppError('Something Went Wrong',StatusCodes.INTERNAL_SERVER_ERROR);
     }
 }
+async function isAdminOrCompany(id)
+{
+    try {
+        const user = await userRepository.get(id);
+        if(!user)
+            throw new AppError('No User found for the given Id',StatusCodes.NOT_FOUND);
+        const adminRole = await roleRepository.getRoleByName(ADMIN);
+        const companyRole = await roleRepository.getRoleByName(FLIGHT_COMPANY);
+        if(!adminRole && ! companyRole )
+            throw new AppError('No Role found for the given Name',StatusCodes.NOT_FOUND);
+        const ar =await user.hasRole(adminRole);
+        const fc =await user.hasRole(companyRole);
+        console.log(ar);
+        console.log(fc);
+        console.log(ar | fc);
+        return ar |fc;
+    } catch (error) {
+        if(error instanceof AppError)
+            throw error;
+        console.log(error);
+        throw new AppError('Something Went Wrong',StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+}
 module.exports = {
     createUser,
     signIn,
     isAuthenticated,
     addRoleToUser,
-    isAdmin
+    isAdmin,
+    isAdminOrCompany
 }

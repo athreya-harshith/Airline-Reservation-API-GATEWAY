@@ -6,19 +6,21 @@ const app = express();
 const apiRoutes = require('./routes');
 //proxy middleware
 const { createProxyMiddleware } = require('http-proxy-middleware');
+//auth middlewares
+const {AuthMiddlewares} = require('./middlewares');
 // rate limiter
 const { rateLimit } = require('express-rate-limit');
 const limiter = rateLimit({
     windowMs: 2 * 60 * 1000, // 2 minutes
-	limit: 3// only 3 requests for an IP address 
+	limit: 10// only 3 requests for an IP address 
 });
 app.use(limiter);
 
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 //both above are for reading requests that has request body
-
-app.use('/flightsService', createProxyMiddleware({ target: ServerConfig.FLIGHTS_SERVICE, 
+var flightsServiceMiddlewares = [];
+app.use('/flightsService',createProxyMiddleware({ target: ServerConfig.FLIGHTS_SERVICE, 
         changeOrigin: true,
         pathRewrite:{'^/flightsService' : '/'} //this rewrites the path
     }));
@@ -32,4 +34,17 @@ app.listen(ServerConfig.PORT,()=>{
     console.log(`Server is up and running on the port ${ServerConfig.PORT}`);
     // Logger.info({message:'some logging is begin done',error:"some error caught",label :'some label according to us'});
 });
+
+// to check the requests for the flightsService and add the middlewares according to them
+function check(req,res,next)
+{
+    console.log(req.method);
+    if(req.method != 'GET'){
+        flightsServiceMiddlewares.push(AuthMiddlewares.checkAuth);
+        flightsServiceMiddlewares.push(AuthMiddlewares.isAdmin);
+        console.log(flightsServiceMiddlewares);
+    } 
+    else 
+        next();
+}
 

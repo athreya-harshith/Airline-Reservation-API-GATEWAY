@@ -62,9 +62,26 @@ async function isAdmin(req,res,next)
         return res.status(StatusCodes.BAD_REQUEST).json(ErrorResponse);
     }
 }
+async function isAdminOrCompany(req,res,next)
+{
+    try {
+        const response = await UserService.isAdminOrCompany(req.user);
+        console.log('response for post on flights',response);
+        if(!response)
+        {
+            return res.status(StatusCodes.UNAUTHORIZED).json({message:'User is not Authorized for this action'});
+        }
+        next();
+    } catch (error) {
+        ErrorResponse.message = 'Something went wrong while processing';
+        ErrorResponse.error = error;
+        return res.status(StatusCodes.BAD_REQUEST).json(ErrorResponse);
+    }
+}
 
 module.exports = {
     validateAuthRequest,
     checkAuth,
-    isAdmin
+    isAdmin,
+    isAdminOrCompany,
 }
