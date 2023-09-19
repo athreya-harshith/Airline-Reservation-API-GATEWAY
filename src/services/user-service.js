@@ -68,8 +68,45 @@ async function isAuthenticated(token)
         throw new AppError('Something Went Wrong',StatusCodes.INTERNAL_SERVER_ERROR);
     }   
 }
+async function addRoleToUser(data)
+{
+    try {
+        const user = await userRepository.get(data.id);
+        if(!user)
+            throw new AppError('No User found for the given Id',StatusCodes.NOT_FOUND);
+        const role = await roleRepository.getRoleByName(data.role);
+        if(!role)
+            throw new AppError('No Role found for the given Name',StatusCodes.NOT_FOUND);
+        user.addRole(role);
+        return user;
+    } catch (error) {
+        if(error instanceof AppError)
+            throw error;
+        console.log(error);
+        throw new AppError('Something Went Wrong',StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+}
+async function isAdmin(id)
+{
+    try {
+        const user = await userRepository.get(id);
+        if(!user)
+            throw new AppError('No User found for the given Id',StatusCodes.NOT_FOUND);
+        const adminRole = await roleRepository.getRoleByName(ADMIN);
+        if(!adminRole)
+            throw new AppError('No Role found for the given Name',StatusCodes.NOT_FOUND);
+        return user.hasRole(adminRole);
+    } catch (error) {
+        if(error instanceof AppError)
+            throw error;
+        console.log(error);
+        throw new AppError('Something Went Wrong',StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+}
 module.exports = {
     createUser,
     signIn,
-    isAuthenticated
+    isAuthenticated,
+    addRoleToUser,
+    isAdmin
 }
