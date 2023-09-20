@@ -16,11 +16,7 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
-app.use(express.json());
-app.use(express.urlencoded({extended:true}));
-//both above are for reading requests that has request body
-var flightsServiceMiddlewares = [];
-app.use('/flightsService',createProxyMiddleware({ target: ServerConfig.FLIGHTS_SERVICE, 
+app.use('/flightsService',AuthMiddlewares.isAdminOrCompany,createProxyMiddleware({ target: ServerConfig.FLIGHTS_SERVICE, 
         changeOrigin: true,
         pathRewrite:{'^/flightsService' : '/'} //this rewrites the path
     }));
@@ -28,7 +24,10 @@ app.use('/bookingService', createProxyMiddleware({ target: ServerConfig.BOOKING_
         changeOrigin: true,
         pathRewrite:{'^/bookingService' : '/'} // rewrites the path to / in booking service
     }));
-
+//always use this after creating the proxy middleware or else request body doesnot work
+app.use(express.json());
+app.use(express.urlencoded({extended:true}));
+//both above are for reading requests that has request body
 app.use('/api',apiRoutes);
 app.listen(ServerConfig.PORT,()=>{
     console.log(`Server is up and running on the port ${ServerConfig.PORT}`);
@@ -36,15 +35,4 @@ app.listen(ServerConfig.PORT,()=>{
 });
 
 // to check the requests for the flightsService and add the middlewares according to them
-function check(req,res,next)
-{
-    console.log(req.method);
-    if(req.method != 'GET'){
-        flightsServiceMiddlewares.push(AuthMiddlewares.checkAuth);
-        flightsServiceMiddlewares.push(AuthMiddlewares.isAdmin);
-        console.log(flightsServiceMiddlewares);
-    } 
-    else 
-        next();
-}
 
