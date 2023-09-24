@@ -59,8 +59,40 @@ async function addRoleToUser(req,res)
         return res.status(error.statusCode).json(ErrorResponse);
     }
 }
+async function getAllUsers(req,res)
+{
+    try {
+        console.log(req.body);
+        console.log(req.params.id);
+        const user = await UserService.getAllUsers();
+        SuccessResponse.message = 'Successfully Fetched all Users';
+        SuccessResponse.data = user;
+        return res.status(StatusCodes.ACCEPTED).json(SuccessResponse);
+    } catch (error) {
+        ErrorResponse.message ='Something went wrong while Fetching all Users'
+        ErrorResponse.error = error;
+        return res.status(error.statusCode).json(ErrorResponse);
+    }
+}
+async function getUser(req,res)
+{
+    try {
+        console.log(req.body);
+        console.log(req.params.id);
+        const user = await UserService.getUser(req.params.id);
+        SuccessResponse.message = 'Successfully Fetched all Users';
+        SuccessResponse.data = user;
+        return res.status(StatusCodes.ACCEPTED).json(SuccessResponse);
+    } catch (error) {
+        ErrorResponse.message ='Something went wrong while Fetching all Users'
+        ErrorResponse.error = error;
+        return res.status(error.statusCode).json(ErrorResponse);
+    }
+}
 module.exports = {
     createUser,
     signIn,
-    addRoleToUser
+    addRoleToUser,
+    getAllUsers,
+    getUser
 }

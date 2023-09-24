@@ -126,11 +126,41 @@ async function isAdminOrCompany(id)
         throw new AppError('Something Went Wrong',StatusCodes.INTERNAL_SERVER_ERROR);
     }
 }
+async function getAllUsers()
+{
+    try {
+        const user = await userRepository.getAll();
+        if(!user)
+            throw new AppError('No User found for the given Id',StatusCodes.NOT_FOUND);
+        return user;
+    } catch (error) {
+        if(error instanceof AppError)
+            throw error;
+        console.log(error);
+        throw new AppError('Something Went Wrong',StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+}
+async function getUser(id)
+{
+    try {
+        const user = await userRepository.get(id);
+        if(!user)
+            throw new AppError('No User found for the given Id',StatusCodes.NOT_FOUND);
+        return user;
+    } catch (error) {
+        if(error instanceof AppError)
+            throw error;
+        console.log(error);
+        throw new AppError('Something Went Wrong',StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+}
 module.exports = {
     createUser,
     signIn,
     isAuthenticated,
     addRoleToUser,
     isAdmin,
-    isAdminOrCompany
+    isAdminOrCompany,
+    getAllUsers,
+    getUser
 }

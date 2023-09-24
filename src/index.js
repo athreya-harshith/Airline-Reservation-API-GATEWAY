@@ -12,7 +12,7 @@ const {AuthMiddlewares} = require('./middlewares');
 const { rateLimit } = require('express-rate-limit');
 const limiter = rateLimit({
     windowMs: 2 * 60 * 1000, // 2 minutes
-	limit: 10// only 3 requests for an IP address 
+	limit: 1000// only 3 requests for an IP address 
 });
 app.use(limiter);
 
